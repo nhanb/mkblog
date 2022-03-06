@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"text/template"
 
 	"github.com/gomarkdown/markdown"
 )
@@ -32,11 +33,23 @@ func find(root, ext string) []string {
 	return results
 }
 
-func mdToHtml(inpath, outpath string) {
-	md, e := ioutil.ReadFile(inpath)
-	panicIfErr(e)
-	html := markdown.ToHTML(md, nil, nil)
-	ioutil.WriteFile(outpath, html, 0644)
+type Page struct {
+	Title string
+	Body  string
+}
+
+func mdToHtml(rootpath, inpath, outpath string) {
+	md, err := ioutil.ReadFile(inpath)
+	panicIfErr(err)
+	bodyHtml := string(markdown.ToHTML(md, nil, nil))
+
+	templatePath := rootpath + "_templates/base.html"
+	tmpl := template.Must(template.ParseFiles(templatePath))
+
+	outfile, err := os.Create(outpath)
+	panicIfErr(err)
+	defer outfile.Close()
+	tmpl.Execute(outfile, Page{Title: "MkBlog", Body: bodyHtml})
 }
 
 func main() {
@@ -45,11 +58,11 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Usage: mkblog my-blog-dir")
 		os.Exit(1)
 	}
-	rootdir := flag.Args()[0]
-	mdpaths := find(rootdir, ".md")
+	rootpath := flag.Args()[0]
+	mdpaths := find(rootpath, ".md")
 	for _, mdpath := range mdpaths {
 		htmlpath := strings.TrimSuffix(mdpath, ".md") + ".html"
 		fmt.Println(mdpath, "->", filepath.Base(htmlpath))
-		mdToHtml(mdpath, htmlpath)
+		mdToHtml(rootpath, mdpath, htmlpath)
 	}
 }
