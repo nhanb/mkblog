@@ -43,8 +43,9 @@ func mdToHtml(rootpath, inpath, outpath string) {
 	panicIfErr(err)
 	bodyHtml := string(markdown.ToHTML(md, nil, nil))
 
-	templatePath := rootpath + "_templates/base.html"
+	templatePath := filepath.Join(rootpath, "_templates", "base.html")
 	tmpl := template.Must(template.ParseFiles(templatePath))
+	fmt.Println("templatePath:", templatePath)
 
 	outfile, err := os.Create(outpath)
 	panicIfErr(err)
