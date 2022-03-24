@@ -9,8 +9,6 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
-
-	"github.com/gomarkdown/markdown"
 )
 
 func panicIfErr(e error) {
@@ -41,7 +39,7 @@ type Page struct {
 func mdToHtml(rootpath, inpath, outpath string) {
 	md, err := ioutil.ReadFile(inpath)
 	panicIfErr(err)
-	bodyHtml := string(markdown.ToHTML(md, nil, nil))
+	parsed := parseMarkdown(string(md))
 
 	templatePath := filepath.Join(rootpath, "_templates", "base.html")
 	tmpl := template.Must(template.ParseFiles(templatePath))
@@ -50,7 +48,7 @@ func mdToHtml(rootpath, inpath, outpath string) {
 	outfile, err := os.Create(outpath)
 	panicIfErr(err)
 	defer outfile.Close()
-	tmpl.Execute(outfile, Page{Title: "MkBlog", Body: bodyHtml})
+	tmpl.Execute(outfile, Page{Title: parsed.Title, Body: parsed.Body})
 }
 
 func main() {
