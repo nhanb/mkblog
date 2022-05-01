@@ -19,9 +19,9 @@ func panicIfErr(e error) {
 	}
 }
 
-func find(root, ext string) []string {
+func find(ext string) []string {
 	var results []string
-	filepath.WalkDir(root, func(s string, d fs.DirEntry, e error) error {
+	filepath.WalkDir(".", func(s string, d fs.DirEntry, e error) error {
 		panicIfErr(e)
 		if filepath.Ext(d.Name()) == ext {
 			results = append(results, s)
@@ -37,12 +37,12 @@ type Page struct {
 	Body           string
 }
 
-func mdToHtml(rootpath, inpath, outpath string) {
+func mdToHtml(inpath, outpath string) {
 	md, err := ioutil.ReadFile(inpath)
 	panicIfErr(err)
 	parsed := parseMarkdown(string(md))
 
-	templatePath := filepath.Join(rootpath, "_templates", "base.html")
+	templatePath := filepath.Join("_templates", "base.html")
 	tmpl := template.Must(template.ParseFiles(templatePath))
 	fmt.Println("templatePath:", templatePath)
 
@@ -66,11 +66,14 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Usage: mkblog my-blog-dir")
 		os.Exit(1)
 	}
-	rootpath := flag.Args()[0]
-	mdpaths := find(rootpath, ".md")
+	blogPath := filepath.Clean(flag.Args()[0])
+	os.Chdir(blogPath)
+	fmt.Println("blogPath:", blogPath)
+
+	mdpaths := find(".md")
 	for _, mdpath := range mdpaths {
 		htmlpath := strings.TrimSuffix(mdpath, ".md") + ".html"
 		fmt.Println(mdpath, "->", filepath.Base(htmlpath))
-		mdToHtml(rootpath, mdpath, htmlpath)
+		mdToHtml(mdpath, htmlpath)
 	}
 }
