@@ -21,13 +21,13 @@ func parseMarkdown(text string) (result MarkdownFile) {
 
 	// Every markdown file must start with front matter.
 	//
-	// Each front matter line is simply a "key: value" pair, where anything
-	// after the first ":" is the value. No escape mechanism here.
+	// Each front matter line is simply a "key = value" pair, where anything
+	// after the first "=" is the value. No escape mechanism here.
 	//
 	// There must be at least 1 empty line after front matter.
 	for _, line := range lines {
 		lineNo++
-		key, val, found := strings.Cut(line, ":")
+		key, val, found := strings.Cut(line, "=")
 		if !found {
 			if strings.TrimSpace(line) != "" {
 				fmt.Fprintf(

@@ -1,5 +1,5 @@
 watch:
-	find . -name '*.go' -o -path './sample/*' | entr -c go run parsing.go mkblog.go ./sample/
+	find . -name '*.go' -o -path './example/*' | entr -c go run parsing.go mkblog.go ./example/
 
 test:
 	go test

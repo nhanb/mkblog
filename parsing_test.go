@@ -6,18 +6,18 @@ import (
 )
 
 func TestParseFrontMatter(t *testing.T) {
-	sample := `title: My name is Foo
-foo :hey now
-BAR: BAR should be bar
+	sample := `title = My name is Foo
+foo =hey now
+BAR= BAR should be bar
 
-# heading
+## heading
 
 body
 `
 	got := parseMarkdown(sample)
 	want := MarkdownFile{
 		Title: "My name is Foo",
-		Body:  "<h1>heading</h1>\n\n<p>body</p>\n",
+		Body:  "<h2>heading</h2>\n\n<p>body</p>\n",
 		FrontMatter: map[string]string{
 			"foo": "hey now",
 			"bar": "BAR should be bar",
