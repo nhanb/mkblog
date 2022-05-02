@@ -8,3 +8,8 @@ body {
   margin: auto;
   max-width: 600px;
 }
+
+main pre {
+  background-color: #eaeaea;
+  padding: 0.5rem;
+}
