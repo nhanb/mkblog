@@ -3,3 +3,6 @@ watch:
 
 test:
 	go test
+
+clean:
+	rm -f mkblog
